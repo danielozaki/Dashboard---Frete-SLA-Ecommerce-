@@ -1,229 +1,742 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trousseau · Painel de Frete & SLA — E-commerce B2C 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Email Intelligence — Trousseau</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  :root{
-    --bg:#13141f; --panel:#1a1d2e; --card:#23273d; --card2:#1f2740;
-    --line:#2f3550; --line2:#2a3048;
-    --txt:#ffffff; --txt2:#c9cde0; --txt3:#8b90a8; --txt4:#6b7090;
-    --green:#5DCAA5; --blue:#378ADD; --blue-d:#185FA5; --blue-l:#85B7EB;
-    --orange:#EF9F27; --red:#D85A30; --red-l:#F0997B; --purple:#7F77DD;
-    --yellow:#FFCD3A; --slate:#4a5278; --gray:#888780;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  body{
-    background:var(--bg); color:var(--txt); font-family:'Archivo',sans-serif;
-    background-image:radial-gradient(circle at 15% 0%, rgba(55,138,221,.07), transparent 40%),
-                     radial-gradient(circle at 85% 100%, rgba(255,205,58,.05), transparent 40%);
-    min-height:100vh; padding:28px;
-  }
-  .mono{font-family:'Spline Sans Mono',monospace;}
-  header.top{max-width:1640px; margin:0 auto 24px;}
-  .brand{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;}
-  .brand h1{font-size:26px; font-weight:800; letter-spacing:-.5px;}
-  .brand .tag{font-size:11px; font-weight:600; color:var(--yellow); border:1px solid #3a3320; background:#221e12; padding:4px 11px; border-radius:6px; text-transform:uppercase; letter-spacing:1px;}
-  .brand p{font-size:12px; color:var(--txt3); margin-top:6px; width:100%;}
-  .grid{max-width:1640px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start;}
-  @media(max-width:1100px){ .grid{grid-template-columns:1fr;} }
-  .col{background:var(--panel); border-radius:16px; padding:20px; border:1px solid var(--line);}
-  .col-head{display:flex; align-items:center; gap:9px; margin-bottom:3px;}
-  .dot{width:9px; height:9px; border-radius:50%;}
-  .col-head h2{font-size:17px; font-weight:700;}
-  .col-sub{font-size:11px; color:var(--txt3); margin:0 0 16px;}
-  .kpis{display:grid; gap:9px; margin-bottom:14px;}
-  .kpis.k5{grid-template-columns:repeat(5,1fr);}
-  .kpis.k2{grid-template-columns:1fr 1fr;}
-  @media(max-width:620px){ .kpis.k5{grid-template-columns:repeat(2,1fr);} }
-  .kpi{background:var(--card); border-radius:10px; padding:11px 13px; border-left:3px solid var(--blue);}
-  .kpi .lbl{font-size:9px; color:var(--txt3); text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px;}
-  .kpi .val{font-size:19px; font-weight:700;}
-  .kpi .sub{font-size:10px; color:var(--txt3); margin-top:3px;}
-  .box{background:var(--card); border-radius:10px; padding:14px; margin-bottom:12px;}
-  .box h3{font-size:12px; color:var(--txt2); font-weight:600; margin-bottom:2px;}
-  .box .h3sub{font-size:10px; color:var(--txt3); margin-bottom:10px;}
-  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
-  .chartwrap{position:relative; width:100%;}
-  .alert{background:#2a2440; border-left:3px solid var(--yellow); border-radius:10px; padding:11px 14px; margin-bottom:14px;}
-  .alert p{font-size:11.5px; color:#FFE08A; line-height:1.55;}
-  .zt{background:var(--card); border-radius:10px; padding:14px;}
-  .zt p.t{font-size:12px; color:var(--txt2); font-weight:600; margin-bottom:10px;}
-  .ztrow{display:flex; justify-content:space-between; padding:4px 0; font-size:12px;}
-  .ztrow span:first-child{color:var(--txt3);} .ztrow span:last-child{color:var(--txt); font-weight:600;}
-  /* CSS bars */
-  .bar{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
-  .bar .bl{font-size:11px; color:var(--txt2); width:78px; flex-shrink:0; text-align:right;}
-  .bar .bt{flex:1; background:var(--bg); border-radius:4px; height:18px; overflow:hidden;}
-  .bar .bf{height:100%; border-radius:4px;}
-  .bar .bv{font-size:11px; color:var(--txt); font-weight:600; width:60px; flex-shrink:0;}
-  .sla{margin-bottom:10px;}
-  .sla.spx{padding-bottom:10px; border-bottom:1px dashed #3a4060;}
-  .sla .head{display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px;}
-  .sla .track{background:var(--bg); border-radius:4px; height:10px; overflow:hidden;}
-  .sla .fill{height:100%;}
-  table.mini{width:100%; border-collapse:collapse; font-size:11px;}
-  table.mini th{text-align:left; padding:6px 4px; color:var(--txt3); font-weight:500; border-bottom:.5px solid #3a4060;}
-  table.mini td{padding:6px 4px; color:var(--txt2); border-bottom:.5px solid var(--line2);}
-  table.mini td.n{color:var(--txt); font-weight:600;}
-  .foot{max-width:1640px; margin:18px auto 0; font-size:10px; color:var(--txt4); line-height:1.6;}
-  .legend{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:8px; font-size:11px; color:var(--txt3);}
-  .legend i{display:inline-block; width:11px; height:11px; border-radius:3px; vertical-align:middle; margin-right:4px;}
+:root{
+  --bg:#F4F5F7;--surface:#fff;--s2:#F8F9FA;--s3:#F0F2F5;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#1A1A2E;--t2:#5A6072;--t3:#9AA0AD;
+  --red:#E24B4A;--rbg:#FDF1F1;--rtx:#8B2020;
+  --amb:#EF9F27;--abg:#FEF7EC;--atx:#7A4A08;
+  --grn:#1D9E75;--gbg:#EDF7F3;--gtx:#0A5C42;
+  --blu:#378ADD;--bbg:#EEF5FD;--btx:#0D3F6E;
+  --pur:#7F77DD;--pbg:#F3F2FD;--ptx:#3C3489;
+  --r:8px;--rl:12px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0F1117;--surface:#1C1E26;--s2:#252830;--s3:#1A1C24;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#E8EAF0;--t2:#9AA0AD;--t3:#5A6072;
+  --rbg:#2A1515;--rtx:#F09090;--abg:#2A1E0A;--atx:#F5C07A;
+  --gbg:#0A1F18;--gtx:#6DD4AC;--bbg:#0D1E30;--btx:#7ABCF5;--pbg:#17143A;--ptx:#B0A8F5;}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+
+/* TOPBAR */
+.top{background:var(--surface);border-bottom:1px solid var(--border);padding:9px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.tl{display:flex;align-items:center;gap:12px}
+.tlogo{font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.1em;text-transform:uppercase}
+.tsep{width:1px;height:18px;background:var(--border2)}
+.ttitle{font-size:14px;font-weight:500}
+.tr{display:flex;align-items:center;gap:8px}
+.tdate{font-size:11px;color:var(--t3)}
+.upill{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);padding:4px 10px;background:var(--s2);border:1px solid var(--border);border-radius:99px}
+.uav{width:22px;height:22px;border-radius:50%;background:var(--bbg);color:var(--btx);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.abtn{display:flex;align-items:center;gap:5px;font-size:12px;padding:6px 14px;border:none;border-radius:var(--r);background:var(--blu);color:#fff;cursor:pointer;font-family:inherit;font-weight:500}
+.abtn:hover{opacity:.88}
+.sbtn{display:flex;align-items:center;gap:5px;font-size:12px;padding:6px 14px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;color:var(--t2);cursor:pointer;font-family:inherit;display:none}
+.sbtn:hover{background:var(--s2)}
+.sbtn:disabled{opacity:.5;cursor:not-allowed}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinning{animation:spin .7s linear infinite}
+
+/* STATUS */
+.sbar{padding:6px 20px;font-size:11px;display:flex;align-items:center;gap:8px;transition:all .3s}
+.sbar.ok{background:var(--gbg);color:var(--gtx)}
+.sbar.warn{background:var(--abg);color:var(--atx)}
+.sbar.info{background:var(--bbg);color:var(--btx)}
+.sbar.ai{background:var(--pbg);color:var(--ptx)}
+.sbar.err{background:var(--rbg);color:var(--rtx)}
+
+/* MAIN */
+.main{padding:14px 20px;max-width:1500px;margin:0 auto}
+
+/* KPI */
+.krow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+.kc{background:var(--surface);border-radius:var(--r);padding:12px 14px;border:1px solid var(--border);border-top:3px solid}
+.kv{font-size:26px;font-weight:500;line-height:1;margin-bottom:4px}
+.kl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+.ks{font-size:10px;margin-top:3px}
+.kr{border-top-color:var(--red)}.kr .kv{color:var(--red)}.kr .ks{color:var(--red)}
+.ka{border-top-color:var(--amb)}.ka .kv{color:var(--amb)}.ka .ks{color:var(--amb)}
+.kb{border-top-color:var(--blu)}.kb .kv{color:var(--blu)}
+.kg{border-top-color:var(--grn)}.kg .kv{color:var(--grn)}
+.kn{border-top-color:var(--border2)}
+.kp{border-top-color:var(--pur)}.kp .kv{color:var(--pur)}
+
+/* MID */
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.card{background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);overflow:hidden}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--s2)}
+.ctitle{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px}
+.badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:500}
+.br{background:var(--rbg);color:var(--rtx)}.bb{background:var(--bbg);color:var(--btx)}.bg{background:var(--gbg);color:var(--gtx)}.ba{background:var(--abg);color:var(--atx)}
+
+/* TWO COL */
+.tcol{display:grid;grid-template-columns:1fr 1fr}
+.col{padding:12px 14px}
+.colb{border-right:1px solid var(--border)}
+.colh{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.colh::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* OCC */
+.oi{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--border)}
+.oi:last-child{border-bottom:none}
+.od{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ot{font-size:12px;flex:1}
+.odate{font-size:10px;color:var(--t3)}
+
+/* AGENDA */
+.ai2{display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid var(--border)}
+.ai2:last-child{border-bottom:none}
+.aico{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.ar{background:var(--rbg)}.ab2{background:var(--bbg)}.aa{background:var(--abg)}.ag{background:var(--gbg)}.ap{background:var(--pbg)}
+.atitle{font-size:12px;font-weight:500}
+.ameta{font-size:11px;color:var(--t3);margin-top:1px}
+.cbadge{font-size:10px;background:var(--abg);color:var(--atx);padding:1px 5px;border-radius:3px;margin-left:3px}
+
+/* CHART */
+.crow{margin-bottom:14px}
+.ccard{background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);overflow:hidden}
+.cinn{padding:12px 16px;position:relative;height:150px}
+.legrow{display:flex;gap:14px;flex-wrap:wrap}
+.legitem{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)}
+.legsq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* BOTTOM */
+.brow{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px}
+.lcard{background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);display:flex;flex-direction:column;height:460px}
+.lhead{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--s2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.lfilts{display:flex;gap:4px}
+.flt{font-size:10px;padding:3px 8px;border:1px solid var(--border2);border-radius:4px;background:transparent;color:var(--t2);cursor:pointer;font-family:inherit}
+.flt:hover,.flt.on{background:var(--text);color:var(--surface);border-color:var(--text)}
+.lscroll{flex:1;overflow-y:auto}
+.lsec{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;padding:7px 14px 3px;display:flex;align-items:center;gap:5px;position:sticky;top:0;background:var(--surface);z-index:1}
+.lsec::after{content:'';flex:1;height:1px;background:var(--border)}
+.ei{padding:8px 14px;cursor:pointer;border-left:3px solid transparent;border-bottom:1px solid var(--border);transition:background .1s}
+.ei:hover{background:var(--s2)}
+.ei.on{background:var(--bbg);border-left-color:var(--blu)}
+.ei.gone{display:none}
+.eitop{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.eidot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.eifrom{font-size:12px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ei.on .eifrom{color:var(--btx)}
+.eitime{font-size:10px;color:var(--t3);flex-shrink:0}
+.eisubj{font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.eitags{display:flex;gap:3px;flex-wrap:wrap}
+.tag{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:500}
+.tR{background:var(--rbg);color:var(--rtx)}.tA{background:var(--abg);color:var(--atx)}.tB{background:var(--bbg);color:var(--btx)}.tG{background:var(--gbg);color:var(--gtx)}.tP{background:var(--pbg);color:var(--ptx)}.tN{background:var(--s2);color:var(--t3);border:1px solid var(--border)}
+.xbtn{margin-left:auto;width:16px;height:16px;border-radius:3px;border:none;background:transparent;color:var(--t3);cursor:pointer;font-size:12px;display:none;align-items:center;justify-content:center;flex-shrink:0}
+.ei:hover .xbtn{display:flex}
+.xbtn:hover{background:var(--rbg);color:var(--rtx)}
+
+/* DETAIL */
+.dcard{background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);display:flex;flex-direction:column;height:460px}
+.dhead{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--s2);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.dtitle{font-size:13px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dsub{font-size:11px;color:var(--t3);white-space:nowrap}
+.dscroll{flex:1;overflow-y:auto;padding:12px 14px}
+.dc{display:none}.dc.on{display:block}
+
+.ab{padding:9px 12px;border-radius:var(--r);margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;border-left:3px solid;font-size:12px;line-height:1.5}
+.ab.R{background:var(--rbg);border-left-color:var(--red);color:var(--rtx)}
+.ab.A{background:var(--abg);border-left-color:var(--amb);color:var(--atx)}
+.ab.B{background:var(--bbg);border-left-color:var(--blu);color:var(--btx)}
+.ab.G{background:var(--gbg);border-left-color:var(--grn);color:var(--gtx)}
+.ab.P{background:var(--pbg);border-left-color:var(--pur);color:var(--ptx)}
+
+.tbox{margin-bottom:10px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.thead2{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--s2);border-bottom:1px solid var(--border)}
+.tlabel{font-size:11px;font-weight:500;color:var(--t2)}
+.tcount{font-size:10px;color:var(--t3);margin-left:auto}
+.tbody{padding:10px 12px;font-size:12px;color:var(--t2);line-height:1.6}
+.lmsg{margin-top:8px;padding:7px 10px;background:var(--s2);border-radius:var(--r);border-left:2px solid var(--border2)}
+.lmlbl{font-size:10px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.lmtxt{font-size:12px;color:var(--text);font-style:italic}
+
+.draftbox{border:1px solid rgba(55,138,221,.3);border-radius:var(--r);overflow:hidden;margin-top:10px}
+.dh{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bbg);border-bottom:1px solid rgba(55,138,221,.2)}
+.dlbl{font-size:10px;color:var(--btx);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.dht{font-size:10px;color:var(--blu)}
+.sjrow{display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid rgba(55,138,221,.15);background:var(--surface)}
+.sjlbl{font-size:11px;color:var(--t3);flex-shrink:0}
+.sjinp{flex:1;font-size:12px;color:var(--text);background:transparent;border:none;outline:none;font-family:inherit}
+.dta{width:100%;min-height:85px;font-size:12px;line-height:1.6;color:var(--text);background:var(--surface);border:none;outline:none;padding:8px 10px;resize:vertical;font-family:inherit}
+.dsig{padding:6px 10px;border-top:1px solid rgba(55,138,221,.15);background:var(--s2);font-size:11px;color:var(--t3)}
+
+.arow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.btn{font-size:12px;padding:6px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--t2);cursor:pointer;font-family:inherit;transition:background .1s}
+.btn:hover{background:var(--s2)}
+.btnp{background:var(--text);color:var(--surface);border-color:transparent}
+.btnp:hover{opacity:.88}
+.btng{background:#EA4335;color:#fff;border-color:transparent;display:flex;align-items:center;gap:5px}
+.btng:hover{opacity:.88}
+.rbar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--gbg);border-left:3px solid var(--grn);border-radius:var(--r);margin-bottom:10px;font-size:12px;color:var(--gtx)}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:220px;gap:10px;color:var(--t3)}
+
+/* AI LOADING */
+.ai-load{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;gap:12px}
+.ai-spinner{width:32px;height:32px;border:3px solid var(--pbg);border-top-color:var(--pur);border-radius:50%;animation:spin .8s linear infinite}
+.ai-msg{font-size:12px;color:var(--ptx);text-align:center}
+
+@media(max-width:900px){
+  .krow{grid-template-columns:repeat(3,1fr)}
+  .mrow,.brow,.tcol{grid-template-columns:1fr}
+  .colb{border-right:none;border-bottom:1px solid var(--border)}
+}
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="brand">
-    <h1>Trousseau · Frete &amp; SLA</h1>
-    <span class="tag">E-commerce B2C · 2026</span>
-    <p>jan a mai/2026 · Correios na base real de envios · demais transportadoras via SÍNTESE · frete grátis isolado das médias</p>
+<div class="top">
+  <div class="tl">
+    <span class="tlogo">⊞ Email Intelligence</span>
+    <div class="tsep"></div>
+    <span class="ttitle">Trousseau Logística — Daniel Ozaki</span>
   </div>
-</header>
-
-<div class="grid">
-
-  <!-- ================= COLUNA 1: VISÃO GERAL ================= -->
-  <section class="col">
-    <div class="col-head"><span class="dot" style="background:var(--green)"></span><h2>Visão Geral — Transportadoras</h2></div>
-    <p class="col-sub">Correios (real) integrado às demais · canal e-commerce</p>
-
-    <div class="kpis k5">
-      <div class="kpi" style="border-color:var(--green)"><div class="lbl">Pedidos</div><div class="val">10.571</div></div>
-      <div class="kpi" style="border-color:var(--blue)"><div class="lbl">Frete total</div><div class="val">R$ 488k</div></div>
-      <div class="kpi" style="border-color:var(--orange)"><div class="lbl">ECT médio</div><div class="val">R$ 50,14</div></div>
-      <div class="kpi" style="border-color:var(--yellow)"><div class="lbl">ECT % vol.</div><div class="val">88%</div></div>
-      <div class="kpi" style="border-color:var(--red)"><div class="lbl">ECT % custo</div><div class="val">95%</div></div>
+  <div class="tr">
+    <span class="tdate" id="tsync">Não sincronizado</span>
+    <div id="upill" style="display:none" class="upill">
+      <div class="uav" id="uav">DO</div>
+      <span id="uname">Daniel Ozaki</span>
     </div>
-
-    <div class="alert"><p>⚠ <strong>2 pontos críticos:</strong> (1) frete real dos Correios (R$ 50,14 · R$ 465k) muito acima da SÍNTESE (R$ 23,89 · R$ 143,6k) — subestimava ~R$ 321k. (2) SLA real: 39,6% dos pedidos chegam ATRASADOS vs. prazo prometido (o campo dos Correios mascarava isso, indicando 94% no prazo).</p></div>
-
-    <div class="row2">
-      <div class="box"><h3>Frete médio por transportadora</h3><div class="h3sub">R$ · só frete pago</div><div class="chartwrap" style="height:200px"><canvas id="g_fm"></canvas></div></div>
-      <div class="box"><h3>Volume de pedidos</h3><div class="h3sub">qtd · escala log</div><div class="chartwrap" style="height:200px"><canvas id="g_vol"></canvas></div></div>
-    </div>
-
-    <div class="row2">
-      <div class="box"><h3>Participação no custo de frete</h3><div class="h3sub">R$ total</div><div class="chartwrap" style="height:210px"><canvas id="g_part"></canvas></div></div>
-      <div class="box"><h3>Resumo por transportadora</h3><div class="h3sub">&nbsp;</div>
-        <table class="mini"><thead><tr><th>Transp.</th><th style="text-align:right">Ped</th><th style="text-align:right">Médio</th><th style="text-align:right">Total</th></tr></thead><tbody id="tbl_geral"></tbody></table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= COLUNA 2: CORREIOS ================= -->
-  <section class="col">
-    <div class="col-head"><span class="dot" style="background:var(--yellow)"></span><h2>Correios (ECT) — Base Real</h2></div>
-    <p class="col-sub">11.173 envios · análises sobre e-commerce (9.273) · SLA real</p>
-
-    <div class="kpis k2">
-      <div class="kpi" style="border-color:var(--green)"><div class="lbl">E-commerce</div><div class="val">9.273</div><div class="sub" style="color:var(--blue-l)">R$ 50,14 · R$ 465k · 39,6% atrasado</div></div>
-      <div class="kpi" style="border-color:var(--red)"><div class="lbl">Omnichannel (lojas)</div><div class="val">1.900</div><div class="sub" style="color:var(--red-l)">R$ 56,30 · R$ 107k · saídas de loja</div></div>
-    </div>
-
-    <div class="row2" style="margin-bottom:12px">
-      <div class="zt"><p class="t">SP Capital</p>
-        <div class="ztrow"><span>Envios</span><span>2.930</span></div>
-        <div class="ztrow"><span>Frete médio</span><span>R$ 16,28</span></div>
-        <div class="ztrow"><span>% atrasado</span><span style="color:var(--orange)">22,7%</span></div>
-        <div class="ztrow"><span>Prazo real / prometido</span><span>1,6 / 1,1 d</span></div>
-        <div class="ztrow"><span>Atraso médio*</span><span style="color:var(--orange)">2,7 dias</span></div>
-      </div>
-      <div class="zt"><p class="t">Demais regiões</p>
-        <div class="ztrow"><span>Envios</span><span>6.343</span></div>
-        <div class="ztrow"><span>Frete médio</span><span>R$ 65,79</span></div>
-        <div class="ztrow"><span>% atrasado</span><span style="color:var(--red)">47,4%</span></div>
-        <div class="ztrow"><span>Prazo real / prometido</span><span>2,7 / 1,5 d</span></div>
-        <div class="ztrow"><span>Atraso médio*</span><span style="color:var(--orange)">2,6 dias</span></div>
-      </div>
-    </div>
-
-    <div class="box"><h3>Custo de frete médio por região</h3><div class="h3sub">R$ · base real</div><div id="bars_reg"></div></div>
-
-    <div class="box"><h3>% pedidos ATRASADOS · atraso médio por região</h3><div class="h3sub">régua real: entrega − postagem vs. prazo prometido · SP Capital em azul (★)</div><div id="bars_sla"></div></div>
-
-    <div class="box"><h3>Custo de frete médio por estado</h3><div class="h3sub">R$ · maior ao menor</div><div id="bars_est"></div></div>
-
-    <div class="box"><h3>Estados com maior % de atraso</h3><div class="h3sub">% de pedidos entregues fora do prazo prometido · vol ≥ 30</div><div id="bars_estsla"></div></div>
-  </section>
-
+    <button class="abtn" id="abtn" onclick="startAuth()">🔑 Conectar Gmail</button>
+    <button class="sbtn" id="sbtn" onclick="syncAll()">
+      <svg id="sico" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+      Sincronizar + IA
+    </button>
+  </div>
 </div>
 
-<p class="foot">*% atrasado e atraso médio calculados pela régua real: (data de entrega − data de postagem) comparada ao prazo prometido na coluna Prazo. NÃO usa o campo QualidadeDoPrazo dos Correios, que se mostrou inconsistente (marcava como "no prazo" entregas que excederam o prometido). Atraso médio considera só os pedidos atrasados. Canal: remetente "TROUSSEAU - ECOMMERCE" = e-commerce; demais remetentes = omnichannel (saídas de loja). Datas dia/mês corrigidas. Período jan–mai/2026.</p>
+<div class="sbar info" id="sbar">
+  ℹ️ Clique em "Conectar Gmail" para autenticar. Após sincronizar, a IA analisa e classifica todos os emails automaticamente.
+</div>
+
+<div class="main">
+  <div class="krow">
+    <div class="kc kr"><div class="kv" id="kp">—</div><div class="kl">Pendentes</div><div class="ks" id="kpsub">aguardando sync</div></div>
+    <div class="kc kr"><div class="kv" id="ku">—</div><div class="kl">Urgentes</div><div class="ks">ação imediata</div></div>
+    <div class="kc ka"><div class="kv" id="kat">—</div><div class="kl">Atenção</div><div class="ks">@mencio. / ops</div></div>
+    <div class="kc kg"><div class="kv" id="kres">—</div><div class="kl">Resolvidos</div><div class="ks">por outros</div></div>
+    <div class="kc kb"><div class="kv" id="ktot">—</div><div class="kl">Total threads</div><div class="ks">últimos 5 dias</div></div>
+    <div class="kc kn"><div class="kv" id="kdis">0</div><div class="kl">Descartados</div><div class="ks">nesta sessão</div></div>
+  </div>
+
+  <div class="mrow">
+    <div class="card">
+      <div class="ch">
+        <span class="ctitle">⚠ Ocorrências — últimos 5 dias</span>
+        <span class="badge br" id="occbadge">aguardando IA</span>
+      </div>
+      <div id="occ-panel">
+        <div class="ai-load"><div class="ai-spinner"></div><div class="ai-msg">Sincronize para carregar ocorrências reais</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <span class="ctitle">📅 Agenda da semana — eventos</span>
+        <span class="badge bb" id="agbadge">aguardando IA</span>
+      </div>
+      <div id="agenda-panel">
+        <div class="ai-load"><div class="ai-spinner"></div><div class="ai-msg">Sincronize para detectar eventos nos emails</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="crow">
+    <div class="ccard">
+      <div class="ch">
+        <span class="ctitle">📊 Volume por categoria — últimos 5 dias</span>
+        <div class="legrow">
+          <div class="legitem"><div class="legsq" style="background:var(--red)"></div>Urgente</div>
+          <div class="legitem"><div class="legsq" style="background:var(--amb)"></div>Atenção/Ops</div>
+          <div class="legitem"><div class="legsq" style="background:var(--pur)"></div>@Mencionado</div>
+          <div class="legitem"><div class="legsq" style="background:var(--grn)"></div>Resolvidos</div>
+        </div>
+      </div>
+      <div class="cinn"><canvas id="chart1" role="img" aria-label="Volume de emails por categoria">Gráfico de volume</canvas></div>
+    </div>
+  </div>
+
+  <div class="brow">
+    <div class="lcard">
+      <div class="lhead">
+        <span style="font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.06em">Caixa de entrada</span>
+        <div class="lfilts">
+          <button class="flt on" onclick="filt(this,'all')">Todos</button>
+          <button class="flt" onclick="filt(this,'p')">Pend.</button>
+          <button class="flt" onclick="filt(this,'r')">Resol.</button>
+        </div>
+      </div>
+      <div class="lscroll" id="elist">
+        <div style="padding:40px 20px;text-align:center;color:var(--t3);font-size:12px">
+          Conecte o Gmail e clique em<br>"Sincronizar + IA" para carregar os emails
+        </div>
+      </div>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead" id="dhead">
+        <span style="font-size:14px;color:var(--t3)">✉</span>
+        <span class="dtitle" id="dtitle">Selecione um email</span>
+        <span class="dsub" id="dsub"></span>
+      </div>
+      <div class="dscroll" id="dscroll">
+        <div class="empty">
+          <span style="font-size:32px;opacity:.3">✉</span>
+          <p style="font-size:13px">Selecione um item à esquerda</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:16px;font-size:11px;color:var(--t3)">
+    Email Intelligence · Trousseau Logística · Daniel Ozaki · Gmail API + Claude AI
+  </div>
+</div>
 
 <script>
-/* ---------- DADOS ---------- */
-const GERAL=[
- {t:"ECT (Correios)",ped:9273,fm:50.14,ft:464965.57},
- {t:"Gadle",ped:849,fm:40.90,ft:7362.72},
- {t:"Jamef",ped:253,fm:64.26,ft:7839.57},
- {t:"Trousseau",ped:159,fm:54.67,ft:7052.31},
- {t:"Loggi",ped:37,fm:17.73,ft:478.82}];
-const REG=[{r:"Sudeste",fm:28.91,np:96.0,atr:2.98},{r:"Sul",fm:65.33,np:89.9,atr:2.83},{r:"Centro-Oeste",fm:74.06,np:87.9,atr:2.35},{r:"Nordeste",fm:139.98,np:89.5,atr:5.62},{r:"Norte",fm:184.07,np:89.5,atr:11.79}];
-const SLA=[{r:"SP Capital",pa:22.7,atr:2.69,sp:true},{r:"Sudeste",pa:29.7,atr:2.36},{r:"Sul",pa:56.3,atr:3.07},{r:"Centro-Oeste",pa:56.1,atr:2.04},{r:"Nordeste",pa:70.1,atr:3.26},{r:"Norte",pa:68.6,atr:3.64}];
-const ESTSLA=[{uf:"PI",pa:87.9,atr:2.79},{uf:"SC",pa:87.4,atr:3.87},{uf:"CE",pa:82.8,atr:3.45},{uf:"SE",pa:78.0,atr:2.92},{uf:"AM",pa:76.0,atr:6.29},{uf:"MA",pa:74.5,atr:2.14},{uf:"RN",pa:74.4,atr:3.55},{uf:"BA",pa:72.5,atr:3.72},{uf:"AL",pa:70.0,atr:2.95},{uf:"ES",pa:68.2,atr:2.44},{uf:"DF",pa:60.0,atr:1.98},{uf:"MT",pa:60.0,atr:1.93},{uf:"RS",pa:59.4,atr:2.40},{uf:"GO",pa:50.2,atr:2.14},{uf:"PE",pa:47.8,atr:2.92},{uf:"RJ",pa:39.7,atr:1.93},{uf:"PR",pa:30.9,atr:2.27},{uf:"MG",pa:30.0,atr:2.00},{uf:"SP",pa:27.5,atr:2.48}];
-const EST=[{uf:"SP",fm:19.45},{uf:"MG",fm:64.77},{uf:"RJ",fm:60.46},{uf:"DF",fm:66.20},{uf:"PR",fm:63.68},{uf:"SC",fm:65.82},{uf:"RS",fm:67.12},{uf:"BA",fm:103.55},{uf:"GO",fm:74.73},{uf:"MT",fm:105.28},{uf:"PE",fm:149.63},{uf:"ES",fm:63.41},{uf:"MS",fm:60.84},{uf:"CE",fm:157.41},{uf:"PA",fm:153.41},{uf:"AM",fm:197.73},{uf:"SE",fm:184.36},{uf:"MA",fm:157.72},{uf:"RN",fm:128.08},{uf:"PB",fm:201.11},{uf:"RO",fm:177.40},{uf:"PI",fm:175.53},{uf:"AL",fm:172.83},{uf:"TO",fm:231.28},{uf:"AC",fm:229.26},{uf:"RR",fm:270.59},{uf:"AP",fm:59.11}].sort((a,b)=>b.fm-a.fm);
-const C={txt:'#fff',txt2:'#c9cde0',txt3:'#8b90a8',grid:'#2f3550',green:'#5DCAA5',blue:'#378ADD',blueD:'#185FA5',orange:'#EF9F27',red:'#D85A30',purple:'#7F77DD',yellow:'#FFCD3A',slate:'#4a5278',gray:'#888780'};
-const cor=v=>v>=150?C.red:v>=70?C.orange:v>=40?'#7F9CDB':C.green;
+const GMAIL_CLIENT = '1098352228172-p6sb1411m2qgnoo0dhkbrmfupbqpkthi.apps.googleusercontent.com';
+const CLAUDE_KEY   = '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';
+const SCOPES       = 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose';
 
-/* ---------- TABELA GERAL ---------- */
-(function(){
-  let h='';
-  GERAL.forEach(x=>{ h+=`<tr><td class="n">${x.t.replace(' (Correios)','')}</td><td style="text-align:right">${x.ped.toLocaleString('pt-BR')}</td><td style="text-align:right">R$ ${x.fm.toFixed(2).replace('.',',')}</td><td style="text-align:right" class="n">R$ ${(x.ft/1000).toFixed(0)}k</td></tr>`; });
-  document.getElementById('tbl_geral').innerHTML=h;
-})();
+let token = null, tokenClient = null, dismissCount = 0, chartInst = null;
+let allEmails = [], aiResult = null;
 
-/* ---------- BARRAS CSS (Correios) ---------- */
-function hbar(el,items,maxv,lf,vf,cf,sf){
-  let h='';
-  items.forEach(it=>{ const v=vf(it),w=Math.max(2,v/maxv*100);
-    h+=`<div class="bar"><span class="bl">${lf(it)}</span><div class="bt"><div class="bf" style="width:${w}%;background:${cf(it)}"></div></div><span class="bv">${sf(v)}</span></div>`; });
-  document.getElementById(el).innerHTML=h;
+/* ── AUTH ── */
+window.addEventListener('load', () => {
+  if (typeof google !== 'undefined') {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GMAIL_CLIENT, scope: SCOPES,
+      callback: r => { if (r.error) { setStatus('Erro auth: ' + r.error, 'err'); return; } token = r.access_token; onAuth(); }
+    });
+  }
+});
+
+function startAuth() {
+  if (!tokenClient) { setStatus('Aguarde a biblioteca Google carregar...', 'warn'); return; }
+  tokenClient.requestAccessToken({ prompt: 'consent' });
 }
-hbar('bars_reg',REG,200,x=>x.r,x=>x.fm,x=>cor(x.fm),v=>'R$ '+v.toFixed(2).replace('.',','));
-hbar('bars_est',EST,280,x=>x.uf,x=>x.fm,x=>cor(x.fm),v=>'R$ '+v.toFixed(0));
-hbar('bars_estsla',ESTSLA,90,x=>x.uf,x=>x.pa,x=>x.pa<=30?C.green:x.pa<=50?C.orange:C.red,v=>v.toFixed(0)+'%');
-(function(){
-  let h='';
-  SLA.forEach(x=>{
-    const cn=x.sp?C.blue:(x.pa<=30?C.green:x.pa<=50?C.orange:C.red);
-    const ca=x.atr>=4?C.red:x.atr>=3?C.orange:'#7F9CDB';
-    const lc=x.sp?'#5FA8E8':C.txt2, lw=x.sp?'600':'400';
-    h+=`<div class="sla ${x.sp?'spx':''}"><div class="head"><span style="color:${lc};font-weight:${lw}">${x.sp?'★ ':''}${x.r}</span><span style="color:${C.txt3}"><span style="color:${cn};font-weight:600">${x.pa}%</span> atrasado · média <span style="color:${ca};font-weight:600">${x.atr}d</span></span></div><div class="track"><div class="fill" style="width:${x.pa}%;background:${cn}"></div></div></div>`;
+
+function onAuth() {
+  document.getElementById('abtn').style.display = 'none';
+  const sb = document.getElementById('sbtn'); sb.style.display = 'flex';
+  document.getElementById('upill').style.display = 'flex';
+  setStatus('Gmail conectado! Clique em "Sincronizar + IA" para analisar seus emails.', 'ok');
+}
+
+/* ── MAIN SYNC FLOW ── */
+async function syncAll() {
+  if (!token) { setStatus('Conecte o Gmail primeiro.', 'warn'); return; }
+  const ico = document.getElementById('sico');
+  ico.classList.add('spinning');
+  document.getElementById('sbtn').disabled = true;
+
+  try {
+    setStatus('📥 Buscando threads do Gmail (últimos 5 dias)...', 'info');
+    const threads = await fetchGmailThreads();
+    document.getElementById('ktot').textContent = threads.length;
+    setStatus(`📧 ${threads.length} threads encontrados. Carregando detalhes...`, 'info');
+
+    const details = await fetchThreadDetails(threads.slice(0, 25));
+    allEmails = details;
+
+    setStatus('🤖 IA analisando e classificando emails... (pode levar 15–30s)', 'ai');
+    aiResult = await analyzeWithClaude(details);
+
+    setStatus('✅ Análise concluída! Dashboard atualizado com dados reais.', 'ok');
+    renderAll(aiResult);
+
+    const now = new Date();
+    document.getElementById('tsync').textContent = 'Sincronizado às ' + now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  } catch(e) {
+    setStatus('Erro: ' + e.message, 'err');
+    console.error(e);
+  } finally {
+    ico.classList.remove('spinning');
+    document.getElementById('sbtn').disabled = false;
+  }
+}
+
+/* ── GMAIL API ── */
+async function fetchGmailThreads() {
+  const since = Math.floor(Date.now()/1000) - 5*86400;
+  const url = `https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=30&q=in:inbox after:${since}`;
+  const r = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+  if (!r.ok) throw new Error('Gmail API: ' + r.status);
+  const d = await r.json();
+  return d.threads || [];
+}
+
+async function fetchThreadDetails(threads) {
+  const details = [];
+  for (const t of threads) {
+    try {
+      const url = `https://gmail.googleapis.com/gmail/v1/users/me/threads/${t.id}?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Subject&metadataHeaders=Date&metadataHeaders=Cc`;
+      const r = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+      const d = await r.json();
+      const msgs = d.messages || [];
+      const first = msgs[0], last = msgs[msgs.length-1];
+      const gh = (m, n) => ((m?.payload?.headers?.find(h => h.name===n))||{}).value||'';
+      details.push({
+        id: t.id,
+        subject: gh(first,'Subject') || '(sem assunto)',
+        from: gh(last,'From'),
+        to: gh(last,'To'),
+        cc: gh(last,'Cc'),
+        date: gh(last,'Date'),
+        firstDate: gh(first,'Date'),
+        msgCount: msgs.length,
+        snippet: last?.snippet || '',
+        firstSnippet: first?.snippet || '',
+        allFrom: msgs.map(m => gh(m,'From')).join(' | ')
+      });
+    } catch(e) { /* skip */ }
+  }
+  return details;
+}
+
+/* ── CLAUDE AI ANALYSIS ── */
+async function analyzeWithClaude(emails) {
+  const emailsText = emails.map((e,i) => `
+EMAIL ${i+1}:
+  ID: ${e.id}
+  Assunto: ${e.subject}
+  De: ${e.from}
+  Para: ${e.to}
+  CC: ${e.cc}
+  Data última msg: ${e.date}
+  Mensagens no thread: ${e.msgCount}
+  Snippet último: ${e.snippet}
+  Snippet primeiro: ${e.firstSnippet}
+  Todos remetentes: ${e.allFrom}
+`).join('\n---\n');
+
+  const prompt = `Você é o assistente de emails do Daniel Ozaki, Gerente de Logística da Trousseau (empresa de enxovais premium). Analise os emails abaixo e retorne SOMENTE um JSON válido, sem markdown, sem explicação.
+
+CONTEXTO: daniel.ozaki@trousseau.com.br é o usuário. Colegas frequentes: Diego Santos, Emerson Pinheiro, Carla Maris, Lucivaldo, João Saturnino, Fernanda Cavalcante, Tayama Bueno, Gabriel Moura, Renata, Vivian. Transportadoras: Movvi, Braspress, Jamef, Total, Correios.
+
+REGRAS DE CLASSIFICAÇÃO:
+- "urgente": emails DIRETOS para Daniel sem resposta, ou que Emerson/chefia cobrou Daniel, ou com palavras URGENTE/urgência/prazo crítico
+- "atencao": emails de operação logística (logistica.adm, transportadoras, NFs) que não são diretos para Daniel mas impactam a operação; ou emails onde @daniel.ozaki é mencionado no texto
+- "resolvido": threads onde outro colega (não Daniel) já deu resposta conclusiva/final; ou Daniel já respondeu e aguarda retorno
+- "informativo": newsletters, RH aniversários, notificações automáticas sem ação necessária
+
+DETECÇÃO DE AGENDA: identifique reuniões, visitas, entregas agendadas, eventos mencionados nos emails.
+
+RETORNE EXATAMENTE este JSON:
+{
+  "kpis": {
+    "urgente": <número>,
+    "atencao": <número>,
+    "resolvido": <número>,
+    "informativo": <número>
+  },
+  "emails": [
+    {
+      "id": "<id do email>",
+      "from_short": "<nome curto do remetente>",
+      "subject_short": "<assunto resumido em até 45 chars>",
+      "category": "urgente|atencao|resolvido|informativo",
+      "priority": "alta|media|baixa",
+      "date_short": "<DD/MM ou 'hoje'>",
+      "tags": ["<tag1>","<tag2>"],
+      "resumo": "<resumo em 1-2 frases do que é o email>",
+      "ultima_mensagem": "<snippet da última mensagem>",
+      "ultimo_remetente": "<nome de quem enviou a última msg>",
+      "msg_count": <número>,
+      "acao_sugerida": "<o que Daniel deve fazer, em 1 frase>",
+      "rascunho": "<rascunho de resposta pronto para usar, ou null se não precisar>",
+      "rascunho_para": "<email do destinatário para o rascunho, ou null>"
+    }
+  ],
+  "ocorrencias": {
+    "urgente": ["<ocorrência 1>", "<ocorrência 2>"],
+    "atencao": ["<ocorrência 1>", "<ocorrência 2>"]
+  },
+  "agenda": [
+    {
+      "titulo": "<título do evento>",
+      "meta": "<data/hora e detalhes>",
+      "tipo": "reuniao|entrega|visita|prazo|evento",
+      "urgencia": "alta|media|baixa"
+    }
+  ],
+  "grafico": {
+    "labels": ["<data1>","<data2>","<data3>","<data4>","<data5>"],
+    "urgente": [<n>,<n>,<n>,<n>,<n>],
+    "atencao": [<n>,<n>,<n>,<n>,<n>],
+    "mencionado": [<n>,<n>,<n>,<n>,<n>],
+    "resolvido": [<n>,<n>,<n>,<n>,<n>]
+  }
+}
+
+EMAILS PARA ANALISAR:
+${emailsText}`;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': CLAUDE_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: prompt }]
+    })
   });
-  document.getElementById('bars_sla').innerHTML=h;
-})();
 
-/* ---------- CHART.JS (Visão Geral) com fallback ---------- */
-function fallbackChart(id,items,lf,vf,cf,sf,maxv){
-  const cv=document.getElementById(id); if(!cv) return;
-  const wrap=cv.parentElement; let h='<div style="padding-top:6px">';
-  const mx=maxv||Math.max(...items.map(vf));
-  items.forEach(it=>{const v=vf(it),w=Math.max(2,v/mx*100);
-    h+=`<div class="bar"><span class="bl">${lf(it)}</span><div class="bt"><div class="bf" style="width:${w}%;background:${cf(it)}"></div></div><span class="bv">${sf(v)}</span></div>`;});
-  wrap.innerHTML=h+'</div>';
+  if (!resp.ok) {
+    const err = await resp.text();
+    throw new Error('Claude API: ' + resp.status + ' — ' + err.slice(0,200));
+  }
+
+  const data = await resp.json();
+  const text = data.content[0].text.trim();
+  const clean = text.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+  return JSON.parse(clean);
 }
-function buildCharts(){
-  if(typeof Chart==='undefined'){
-    const T=GERAL.slice().sort((a,b)=>b.fm-a.fm);
-    fallbackChart('g_fm',T,x=>x.t.replace(' (Correios)',''),x=>x.fm,x=>x.t.includes('ECT')?C.yellow:C.slate,v=>'R$ '+v.toFixed(2).replace('.',','));
-    fallbackChart('g_vol',GERAL,x=>x.t.replace(' (Correios)',''),x=>x.ped,x=>x.t.includes('ECT')?C.yellow:C.gray,v=>v.toLocaleString('pt-BR'));
-    fallbackChart('g_part',GERAL,x=>x.t.replace(' (Correios)',''),x=>x.ft,(x,i)=>[C.yellow,C.blue,C.orange,C.red,C.purple][GERAL.indexOf(x)],v=>'R$ '+(v/1000).toFixed(0)+'k');
+
+/* ── RENDER ── */
+function renderAll(r) {
+  // KPIs
+  document.getElementById('kp').textContent  = r.kpis.urgente + r.kpis.atencao;
+  document.getElementById('ku').textContent  = r.kpis.urgente;
+  document.getElementById('kat').textContent = r.kpis.atencao;
+  document.getElementById('kres').textContent= r.kpis.resolvido;
+  document.getElementById('kpsub').textContent = 'últimos 5 dias';
+  document.getElementById('occbadge').textContent = 'ao vivo';
+  document.getElementById('occbadge').className = 'badge bg';
+  document.getElementById('agbadge').textContent = 'ao vivo';
+  document.getElementById('agbadge').className = 'badge bb';
+
+  // Ocorrências
+  renderOcc(r.ocorrencias);
+
+  // Agenda
+  renderAgenda(r.agenda);
+
+  // Chart
+  renderChart(r.grafico);
+
+  // Email list
+  renderEmails(r.emails);
+}
+
+function renderOcc(occ) {
+  const urgent = (occ.urgente||[]);
+  const aten   = (occ.atencao||[]);
+  const html = `
+    <div class="tcol">
+      <div class="col colb">
+        <div class="colh">Urgente / ação sua</div>
+        ${urgent.map(o=>`<div class="oi"><span class="od" style="background:var(--red)"></span><span class="ot">${esc(o)}</span></div>`).join('')||'<div style="font-size:12px;color:var(--t3);padding:8px 0">Nenhuma urgente</div>'}
+      </div>
+      <div class="col">
+        <div class="colh">Atenção / ops</div>
+        ${aten.map(o=>`<div class="oi"><span class="od" style="background:var(--amb)"></span><span class="ot">${esc(o)}</span></div>`).join('')||'<div style="font-size:12px;color:var(--t3);padding:8px 0">Nenhuma</div>'}
+      </div>
+    </div>`;
+  document.getElementById('occ-panel').innerHTML = html;
+}
+
+function renderAgenda(agenda) {
+  if (!agenda || !agenda.length) {
+    document.getElementById('agenda-panel').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--t3)">Nenhum evento detectado nos emails</div>';
     return;
   }
-  Chart.defaults.color=C.txt3; Chart.defaults.font.size=10; Chart.defaults.font.family='Archivo';
-  const grid={color:C.grid};
-  const T=GERAL.slice().sort((a,b)=>b.fm-a.fm);
-  new Chart(g_fm,{type:'bar',data:{labels:T.map(x=>x.t.replace(' (Correios)','')),datasets:[{data:T.map(x=>x.fm),backgroundColor:T.map(x=>x.t.includes('ECT')?C.yellow:C.slate),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'R$ '+c.parsed.x.toFixed(2)}}},scales:{x:{grid,ticks:{callback:v=>'R$'+v}},y:{grid:{display:false}}}}});
-  new Chart(g_vol,{type:'bar',data:{labels:GERAL.map(x=>x.t.replace(' (Correios)','')),datasets:[{data:GERAL.map(x=>x.ped),backgroundColor:GERAL.map(x=>x.t.includes('ECT')?C.yellow:C.gray),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{type:'logarithmic',grid},y:{grid:{display:false}}}}});
-  new Chart(g_part,{type:'doughnut',data:{labels:GERAL.map(x=>x.t.replace(' (Correios)','')),datasets:[{data:GERAL.map(x=>x.ft),backgroundColor:[C.yellow,C.blue,C.orange,C.red,C.purple],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{boxWidth:9,font:{size:10},color:C.txt2}},tooltip:{callbacks:{label:c=>c.label+': R$ '+c.parsed.toLocaleString('pt-BR',{maximumFractionDigits:0})}}}}});
+  const icons = { reuniao:'👥', entrega:'🚚', visita:'🏢', prazo:'⏰', evento:'📦' };
+  const cls   = { alta:'ar', media:'ab2', baixa:'ag' };
+  const items = agenda.slice(0,6).map(a=>`
+    <div class="ai2">
+      <div class="aico ${cls[a.urgencia]||'ab2'}">${icons[a.tipo]||'📅'}</div>
+      <div><div class="atitle">${esc(a.titulo)}</div><div class="ameta">${esc(a.meta)}</div></div>
+    </div>`).join('');
+  document.getElementById('agenda-panel').innerHTML = `<div class="col">${items}</div>`;
 }
-if(document.readyState==='complete') buildCharts();
-else window.addEventListener('load',buildCharts);
-setTimeout(buildCharts,1200);
+
+function renderChart(g) {
+  if (!g) return;
+  const ctx = document.getElementById('chart1');
+  if (chartInst) chartInst.destroy();
+  chartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: g.labels,
+      datasets: [
+        { label:'Urgente',    data:g.urgente,    backgroundColor:'#E24B4A', stack:'a', borderWidth:0 },
+        { label:'Atenção/Ops',data:g.atencao,    backgroundColor:'#EF9F27', stack:'a', borderWidth:0 },
+        { label:'@Mencionado',data:g.mencionado, backgroundColor:'#7F77DD', stack:'a', borderWidth:0 },
+        { label:'Resolvidos', data:g.resolvido,  backgroundColor:'#1D9E75', stack:'a', borderWidth:0 },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ stacked:true, grid:{ display:false }, ticks:{ font:{ size:11 } } },
+        y:{ stacked:true, grid:{ color:'rgba(128,128,128,0.08)' }, ticks:{ font:{ size:11 }, stepSize:2 } }
+      }
+    }
+  });
+}
+
+function renderEmails(emails) {
+  if (!emails || !emails.length) {
+    document.getElementById('elist').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--t3)">Nenhum email encontrado</div>';
+    return;
+  }
+
+  const urgentes   = emails.filter(e=>e.category==='urgente');
+  const atencao    = emails.filter(e=>e.category==='atencao');
+  const resolvidos = emails.filter(e=>e.category==='resolvido');
+  const info       = emails.filter(e=>e.category==='informativo');
+
+  const catColor = { urgente:'var(--red)', atencao:'var(--amb)', resolvido:'var(--grn)', informativo:'var(--t3)' };
+  const tagClass = { urgente:'tR', atencao:'tA', resolvido:'tG', informativo:'tN' };
+
+  function emailItem(e) {
+    const tags = (e.tags||[]).slice(0,2).map(t=>`<span class="tag ${tagClass[e.category]||'tN'}">${esc(t)}</span>`).join('');
+    return `<div class="ei" id="ei-${e.id}" data-cat="${e.category==='urgente'||e.category==='atencao'?'p':'r'}" onclick="showDetail('${e.id}')">
+      <div class="eitop">
+        <span class="eidot" style="background:${catColor[e.category]}"></span>
+        <span class="eifrom">${esc(e.from_short)}</span>
+        <span class="eitime">${esc(e.date_short)}</span>
+        <button class="xbtn" onclick="dismissEi(event,'${e.id}')">✕</button>
+      </div>
+      <div class="eisubj">${esc(e.subject_short)}</div>
+      <div class="eitags">${tags}</div>
+    </div>`;
+  }
+
+  let html = '';
+  if (urgentes.length) { html += `<div class="lsec">Urgente — ação sua</div>${urgentes.map(emailItem).join('')}`; }
+  if (atencao.length)  { html += `<div class="lsec">Ponto de atenção</div>${atencao.map(emailItem).join('')}`; }
+  if (resolvidos.length){ html += `<div class="lsec">Resolvidos por outros</div>${resolvidos.map(emailItem).join('')}`; }
+  if (info.length)     { html += `<div class="lsec">Informativos</div>${info.map(emailItem).join('')}`; }
+
+  document.getElementById('elist').innerHTML = html;
+
+  // auto-select first urgent
+  if (urgentes.length) showDetail(urgentes[0].id);
+}
+
+function showDetail(id) {
+  const email = (aiResult?.emails||[]).find(e=>e.id===id);
+  document.querySelectorAll('.ei').forEach(el=>el.classList.remove('on'));
+  const el = document.getElementById('ei-'+id);
+  if (el) el.classList.add('on');
+
+  if (!email) return;
+
+  const catLabel = { urgente:'🔴 Urgente', atencao:'🟡 Atenção / ops', resolvido:'🟢 Resolvido', informativo:'⚪ Informativo' };
+  const abClass  = { urgente:'R', atencao:'A', resolvido:'G', informativo:'B' };
+
+  let draftHtml = '';
+  if (email.rascunho) {
+    const draftId = 'dr-'+id.replace(/[^a-z0-9]/gi,'');
+    const subjId  = 'sj-'+id.replace(/[^a-z0-9]/gi,'');
+    draftHtml = `
+      <div class="draftbox">
+        <div class="dh"><span class="dlbl">✦ Rascunho IA</span><span class="dht">✏ edite abaixo</span></div>
+        <div class="sjrow"><span class="sjlbl">Assunto:</span><input class="sjinp" id="${subjId}" value="Re: ${esc(email.subject_short)}" /></div>
+        <textarea class="dta" id="${draftId}">${esc(email.rascunho)}</textarea>
+        <div class="dsig"><strong>Daniel Ozaki</strong> — Logística TROUSSEAU · (13) 99198-6658 · daniel.ozaki@trousseau.com.br</div>
+      </div>
+      <div class="arow">
+        <button class="btn btng" onclick="createDraft('${email.rascunho_para||''}','${subjId}','${draftId}')">
+          ✉ Criar rascunho Gmail
+        </button>
+        <button class="btn" onclick="dismissEi({stopPropagation:()=>{}}, '${id}')">Descartar</button>
+      </div>`;
+  } else {
+    draftHtml = `<div class="arow"><a href="https://mail.google.com/mail/u/0/#inbox/${id}" target="_blank" class="btn btnp" style="text-decoration:none">Abrir no Gmail ↗</a><button class="btn" onclick="dismissEi({stopPropagation:()=>{}}, '${id}')">Descartar</button></div>`;
+  }
+
+  const html = `
+    <div class="ab ${abClass[email.category]||'B'}">${catLabel[email.category]||''} · ${esc(email.acao_sugerida||'')}</div>
+    <div class="tbox">
+      <div class="thead2">
+        <span class="tlabel">Thread — ${email.msg_count||1} mensagem(s)</span>
+        <span class="tcount">${esc(email.from_short)} · ${esc(email.date_short)}</span>
+      </div>
+      <div class="tbody">
+        ${esc(email.resumo||'')}
+        <div class="lmsg">
+          <div class="lmlbl">Última mensagem — ${esc(email.ultimo_remetente||'')}</div>
+          <div class="lmtxt">"${esc(email.ultima_mensagem||email.snippet||'')}"</div>
+        </div>
+      </div>
+    </div>
+    ${draftHtml}`;
+
+  document.getElementById('dtitle').textContent = email.subject_short;
+  document.getElementById('dsub').textContent   = email.from_short + ' · ' + email.date_short;
+  document.getElementById('dscroll').innerHTML  = html;
+}
+
+/* ── CREATE GMAIL DRAFT ── */
+async function createDraft(to, subjId, bodyId) {
+  if (!token) { alert('Conecte o Gmail primeiro.'); return; }
+  const subject = document.getElementById(subjId)?.value || '';
+  const body    = document.getElementById(bodyId)?.value || '';
+  const full    = body + '\n\nDaniel Ozaki\nLogística TROUSSEAU · (13) 99198-6658 · daniel.ozaki@trousseau.com.br';
+  try {
+    const raw = [`To: ${to}`,`Subject: ${subject}`,'Content-Type: text/plain; charset=utf-8','',full].join('\r\n');
+    const enc = btoa(unescape(encodeURIComponent(raw))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    const r = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/drafts', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer '+token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: { raw: enc } })
+    });
+    if (!r.ok) throw new Error('HTTP '+r.status);
+    setStatus('✅ Rascunho criado no Gmail! Abrindo rascunhos...', 'ok');
+    setTimeout(()=>window.open('https://mail.google.com/mail/u/0/#drafts','_blank'), 800);
+  } catch(e) { setStatus('Erro ao criar rascunho: '+e.message, 'err'); }
+}
+
+/* ── UI HELPERS ── */
+function setStatus(msg, type) {
+  const b = document.getElementById('sbar');
+  b.textContent = msg;
+  b.className = 'sbar ' + (type||'info');
+}
+
+function dismissEi(e, id) {
+  e.stopPropagation();
+  const el = document.getElementById('ei-'+id);
+  if (el) el.classList.add('gone');
+  dismissCount++;
+  document.getElementById('kdis').textContent = dismissCount;
+  document.getElementById('kp').textContent =
+    document.querySelectorAll('#elist .ei[data-cat="p"]:not(.gone)').length;
+  document.getElementById('dscroll').innerHTML = '<div class="empty"><span style="font-size:32px;opacity:.3">✉</span><p style="font-size:13px">Selecione um item</p></div>';
+  document.getElementById('dtitle').textContent = 'Selecione um email';
+  document.getElementById('dsub').textContent = '';
+}
+
+function filt(btn, cat) {
+  document.querySelectorAll('.flt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('#elist .ei').forEach(el=>{
+    if (el.classList.contains('gone')) return;
+    el.style.display = (cat==='all'||el.dataset.cat===cat)?'':'none';
+  });
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 </script>
 </body>
 </html>
